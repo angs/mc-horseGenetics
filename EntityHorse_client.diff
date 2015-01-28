@@ -7,7 +7,7 @@
 > 		private static final double minSpeed = 0.1125D;
 > 		private static final double maxSpeed = 0.3375D;
 > 		private static final double mutationChance = 0.1;
-> 		private double[] genes = new double[9];
+> 		private double[] genes;
 > 		//\
 1016a1027,1037
 > 		//ADDED
@@ -85,17 +85,56 @@
 > 				/*
 1610a1690
 > 				*/
-1644a1725,1737
+1650a1731,1776
 > 				//ADDED
-> 				this.genes = new double[]
-> 				{ this.rand.nextDouble()
-> 				, this.rand.nextDouble()
-> 				, this.rand.nextDouble()
-> 				, this.rand.nextDouble()
-> 				, this.rand.nextDouble()
-> 				, this.rand.nextDouble()
-> 				, this.rand.nextDouble()
-> 				, this.rand.nextDouble()
-> 				, this.rand.nextDouble()
-> 				};
+> 				if (var8 == 0) //normal horse
+> 				{
+> 					this.genes = new double[]
+> 					{ this.rand.nextDouble()
+> 					, this.rand.nextDouble()
+> 					, this.rand.nextDouble()
+> 					, this.rand.nextDouble()
+> 					, this.rand.nextDouble()
+> 					, this.rand.nextDouble()
+> 					, this.rand.nextDouble()
+> 					, this.rand.nextDouble()
+> 					, this.rand.nextDouble()
+> 					};
+> 				} 
+> 				else if (var8 == 3 || var8 == 4) //skeleton or undead
+> 				{
+> 					this.genes = new double[]
+> 					{ 0.0D
+> 					, 0.0D
+> 					, 0.0D
+> 					, 0.3888889D
+> 					, 0.3888889D
+> 					, 0.3888889D
+> 					, this.rand.nextDouble()
+> 					, this.rand.nextDouble()
+> 					, this.rand.nextDouble()
+> 					};
+> 				}
+> 				else //donkey or mule
+> 				{
+> 					this.genes = new double[]
+> 					{ this.rand.nextDouble()
+> 					, this.rand.nextDouble()
+> 					, this.rand.nextDouble()
+> 					, 0.27777776453230113D //donkey speed
+> 					, 0.27777776453230113D //more variation
+> 					, 0.27777776453230113D //could be added
+> 					, 0.16666666666666666D //jumping too
+> 					, 0.16666666666666666D
+> 					, 0.16666666666666666D
+> 					};
+> 				}
+> 				this.updateStats();
+> 				/*
 > 				//\
+1677a1804
+> 				*/
+1773a1901
+> 		/* These aren't needed anymore
+1787a1916
+> 		*/
