@@ -1,4 +1,4 @@
-74a75,93
+74a75,84
 > 		//ADDED
 > 		private static final double minHealth = 15.0D;
 > 		private static final double maxHealth = 30.0D;
@@ -7,136 +7,97 @@
 > 		private static final double minSpeed = 0.1125D;
 > 		private static final double maxSpeed = 0.3375D;
 > 		private static final double mutationChance = 0.1;
-> 		//It would be nice and less noisy if all these could ge a list instead, but I don't know if that's possible if this is used by the game to set a default value to geneless horses.
->     private static final IAttribute gene0 = (new RangedAttribute((IAttribute)null, "horse.gene0", 0.5D, 0.0D, 1.0D)).setDescription("Gene 1").setShouldWatch(false);
->     private static final IAttribute gene1 = (new RangedAttribute((IAttribute)null, "horse.gene1", 0.5D, 0.0D, 1.0D)).setDescription("Gene 1").setShouldWatch(false);
->     private static final IAttribute gene2 = (new RangedAttribute((IAttribute)null, "horse.gene2", 0.5D, 0.0D, 1.0D)).setDescription("Gene 1").setShouldWatch(false);
->     private static final IAttribute gene3 = (new RangedAttribute((IAttribute)null, "horse.gene3", 0.5D, 0.0D, 1.0D)).setDescription("Gene 1").setShouldWatch(false);
->     private static final IAttribute gene4 = (new RangedAttribute((IAttribute)null, "horse.gene4", 0.5D, 0.0D, 1.0D)).setDescription("Gene 1").setShouldWatch(false);
->     private static final IAttribute gene5 = (new RangedAttribute((IAttribute)null, "horse.gene5", 0.5D, 0.0D, 1.0D)).setDescription("Gene 1").setShouldWatch(false);
->     private static final IAttribute gene6 = (new RangedAttribute((IAttribute)null, "horse.gene6", 0.5D, 0.0D, 1.0D)).setDescription("Gene 1").setShouldWatch(false);
->     private static final IAttribute gene7 = (new RangedAttribute((IAttribute)null, "horse.gene7", 0.5D, 0.0D, 1.0D)).setDescription("Gene 1").setShouldWatch(false);
->     private static final IAttribute gene8 = (new RangedAttribute((IAttribute)null, "horse.gene8", 0.5D, 0.0D, 1.0D)).setDescription("Gene 1").setShouldWatch(false);
+> 		private double[] genes = new double[9];
 > 		//\
-661a681,691
-> 				//ADDED
-> 				this.getAttributeMap().registerAttribute(gene0);
-> 				this.getAttributeMap().registerAttribute(gene1);
-> 				this.getAttributeMap().registerAttribute(gene2);
-> 				this.getAttributeMap().registerAttribute(gene3);
-> 				this.getAttributeMap().registerAttribute(gene4);
-> 				this.getAttributeMap().registerAttribute(gene5);
-> 				this.getAttributeMap().registerAttribute(gene6);
-> 				this.getAttributeMap().registerAttribute(gene7);
-> 				this.getAttributeMap().registerAttribute(gene8);
-> 				//\
-932a963,986
+932a943,954
 > 		//ADDED
 > 		public void updateStats()
 > 		{
-> 				double[] genes = 
-> 				  { this.getEntityAttribute(gene0).getBaseValue()
-> 				  , this.getEntityAttribute(gene1).getBaseValue()
-> 				  , this.getEntityAttribute(gene2).getBaseValue()
-> 				  , this.getEntityAttribute(gene3).getBaseValue()
-> 				  , this.getEntityAttribute(gene4).getBaseValue()
-> 				  , this.getEntityAttribute(gene5).getBaseValue()
-> 				  , this.getEntityAttribute(gene6).getBaseValue()
-> 				  , this.getEntityAttribute(gene7).getBaseValue()
-> 				  , this.getEntityAttribute(gene8).getBaseValue()
-> 					};
-> 
->         double health_ = (maxHealth-minHealth)* (genes[0]+genes[1]+genes[2]) / 3.0D + minHealth;
->         double speed_  = (maxSpeed-minSpeed)  * (genes[3]+genes[4]+genes[5]) / 3.0D + minSpeed;
->         double jump_   = (maxJump-minJump)    * (genes[6]+genes[7]+genes[8]) / 3.0D + minJump;
+>         double health_ = (maxHealth-minHealth)* (this.genes[0]+this.genes[1]+this.genes[2]) / 3.0D + minHealth;
+>         double speed_  = (maxSpeed-minSpeed)  * (this.genes[3]+this.genes[4]+this.genes[5]) / 3.0D + minSpeed;
+>         double jump_   = (maxJump-minJump)    * (this.genes[6]+this.genes[7]+this.genes[8]) / 3.0D + minJump;
 > 
 > 				this.getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(health_);
 >         this.getEntityAttribute(horseJumpStrength).setBaseValue(jump_);
 >         this.getEntityAttribute(SharedMonsterAttributes.movementSpeed).setBaseValue(speed_);
 > 		}//\
 > 
-1319a1374,1386
+1319a1342,1344
 > 				//ADDED
-> //				tagCompound.setTag("Genes", this.newDoubleNBTList(new double[]
-> //				{ this.getEntityAttribute(gene0).getBaseValue()
-> //				, this.getEntityAttribute(gene1).getBaseValue()
-> //				, this.getEntityAttribute(gene2).getBaseValue()
-> //				, this.getEntityAttribute(gene3).getBaseValue()
-> //				, this.getEntityAttribute(gene4).getBaseValue()
-> //				, this.getEntityAttribute(gene5).getBaseValue()
-> //				, this.getEntityAttribute(gene6).getBaseValue()
-> //				, this.getEntityAttribute(gene7).getBaseValue()
-> //				, this.getEntityAttribute(gene8).getBaseValue()
-> //				}));
+> 				tagCompound.setTag("Genes", this.newDoubleNBTList(this.genes));
 > 				//\
-1366a1434,1445
+1352a1378,1400
+> 		//ADDED
+>     private double[] generateRolls(double total)
+> 		{
+> 			double a, b, c;
+> 			boolean upper = total > 1.5;
+> 			if (upper){ total = 3.0 - total; }
+> 			do {
+> 				a = total*this.rand.nextDouble();
+> 				b = total*this.rand.nextDouble();
+> 				if (a+b >= total)
+> 				{
+> 					a = total - a;
+> 					b = total - b;
+> 				}
+> 				c = total - a - b;
+> 			} while (a > 1.0 || b > 1.0 || c > 1.0);
+> 			if (upper){
+> 				return new double[] {1.0-a, 1.0-b, 1.0-c}; }
+> 			else {
+> 				return new double[] {a,b,c};}
+> 		}
+> 		//\
+> 
+1366a1415,1433
 > 				//Gene NBT Tag list ADDED
-> //				NBTTagList geneNBT = tagCompund.getTagList("Genes", 10);
-> //				this.getEntityAttribute(gene0).setBaseValue(geneNBT.getDouble(0));
-> //				this.getEntityAttribute(gene1).setBaseValue(geneNBT.getDouble(1));
-> //				this.getEntityAttribute(gene2).setBaseValue(geneNBT.getDouble(2));
-> //				this.getEntityAttribute(gene3).setBaseValue(geneNBT.getDouble(3));
-> //				this.getEntityAttribute(gene4).setBaseValue(geneNBT.getDouble(4));
-> //				this.getEntityAttribute(gene5).setBaseValue(geneNBT.getDouble(5));
-> //				this.getEntityAttribute(gene6).setBaseValue(geneNBT.getDouble(6));
-> //				this.getEntityAttribute(gene7).setBaseValue(geneNBT.getDouble(7));
-> //				this.getEntityAttribute(gene8).setBaseValue(geneNBT.getDouble(8));
-> //				//\
-1520a1600,1642
+> 				NBTTagList geneNBT = tagCompund.getTagList("Genes", 6);
+> 				if (geneNBT.tagCount() != 0){
+> 				  for (int i = 0; i < 9; ++i)
+> 			 	  {
+> 						this.genes[i] = geneNBT.getDouble(i);
+> 		 			}
+> 				}
+> 				else //To simplify: stats are essentially calculated as 3d6=v. Generate fairly 3d6 from v for backwards compability.
+> 				{
+> 				  double h = 3.0*(this.getEntityAttribute(SharedMonsterAttributes.maxHealth).getBaseValue()-minHealth)/(maxHealth-minHealth);
+> 					double s = 3.0*(this.getEntityAttribute(SharedMonsterAttributes.movementSpeed).getBaseValue()-minSpeed)/(maxSpeed-minSpeed);
+> 					double j = 3.0*(this.getEntityAttribute(horseJumpStrength).getBaseValue()-minJump)/(maxJump-minJump);
+> 					double[] h_ = generateRolls(h);
+> 					double[] s_ = generateRolls(s);
+> 					double[] j_ = generateRolls(j);
+> 					this.genes = new double[] {h_[0], h_[1], h_[2], s_[0], s_[1], s_[2], j_[0], j_[1], j_[2]};
+> 				}
+> 				//\
+1520a1588,1601
 > 
 > 				//ADDED
-> 				double[] genes = 
-> 				  { this.getEntityAttribute(gene0).getBaseValue()
-> 				  , this.getEntityAttribute(gene1).getBaseValue()
-> 				  , this.getEntityAttribute(gene2).getBaseValue()
-> 				  , this.getEntityAttribute(gene3).getBaseValue()
-> 				  , this.getEntityAttribute(gene4).getBaseValue()
-> 				  , this.getEntityAttribute(gene5).getBaseValue()
-> 				  , this.getEntityAttribute(gene6).getBaseValue()
-> 				  , this.getEntityAttribute(gene7).getBaseValue()
-> 				  , this.getEntityAttribute(gene8).getBaseValue()
-> 					};
-> 				double[] genes2 = 
-> 				  { p_90011_1_.getEntityAttribute(gene0).getBaseValue()
-> 				  , p_90011_1_.getEntityAttribute(gene1).getBaseValue()
-> 				  , p_90011_1_.getEntityAttribute(gene2).getBaseValue()
-> 				  , p_90011_1_.getEntityAttribute(gene3).getBaseValue()
-> 				  , p_90011_1_.getEntityAttribute(gene4).getBaseValue()
-> 				  , p_90011_1_.getEntityAttribute(gene5).getBaseValue()
-> 				  , p_90011_1_.getEntityAttribute(gene6).getBaseValue()
-> 				  , p_90011_1_.getEntityAttribute(gene7).getBaseValue()
-> 				  , p_90011_1_.getEntityAttribute(gene8).getBaseValue()
-> 					};
+> 				double[] genes2 = var2.genes;
 > 
 > 				double[] newGenes = new double[9];
 > 				for (int i = 0; i < 9; ++i)
 > 				{
 > 					if (this.rand.nextDouble() < mutationChance){newGenes[i]=this.rand.nextDouble();}
-> 					else if (this.rand.nextBoolean()) { newGenes[i] = genes[i]; }
+> 					else if (this.rand.nextBoolean()) { newGenes[i] = this.genes[i]; }
 > 					else { newGenes[i] = genes2[i]; }
 > 				}
-> 				var3.getEntityAttribute(gene0).setBaseValue(newGenes[0]);
-> 				var3.getEntityAttribute(gene1).setBaseValue(newGenes[1]);
-> 				var3.getEntityAttribute(gene2).setBaseValue(newGenes[2]);
-> 				var3.getEntityAttribute(gene3).setBaseValue(newGenes[3]);
-> 				var3.getEntityAttribute(gene4).setBaseValue(newGenes[4]);
-> 				var3.getEntityAttribute(gene5).setBaseValue(newGenes[5]);
-> 				var3.getEntityAttribute(gene6).setBaseValue(newGenes[6]);
-> 				var3.getEntityAttribute(gene7).setBaseValue(newGenes[7]);
-> 				var3.getEntityAttribute(gene8).setBaseValue(newGenes[8]);
+> 				var3.genes = newGenes;
 > 				var3.updateStats();//\
 > 				/*
-1526a1649
+1526a1608
 > 				*/
-1560a1684,1694
+1560a1643,1655
 > 				//ADDED
-> 				this.getEntityAttribute(gene0).setBaseValue(this.rand.nextDouble());
-> 				this.getEntityAttribute(gene1).setBaseValue(this.rand.nextDouble());
-> 				this.getEntityAttribute(gene2).setBaseValue(this.rand.nextDouble());
-> 				this.getEntityAttribute(gene3).setBaseValue(this.rand.nextDouble());
-> 				this.getEntityAttribute(gene4).setBaseValue(this.rand.nextDouble());
-> 				this.getEntityAttribute(gene5).setBaseValue(this.rand.nextDouble());
-> 				this.getEntityAttribute(gene6).setBaseValue(this.rand.nextDouble());
-> 				this.getEntityAttribute(gene7).setBaseValue(this.rand.nextDouble());
-> 				this.getEntityAttribute(gene8).setBaseValue(this.rand.nextDouble());
+> 				this.genes = new double[]
+> 				{ this.rand.nextDouble()
+> 				, this.rand.nextDouble()
+> 				, this.rand.nextDouble()
+> 				, this.rand.nextDouble()
+> 				, this.rand.nextDouble()
+> 				, this.rand.nextDouble()
+> 				, this.rand.nextDouble()
+> 				, this.rand.nextDouble()
+> 				, this.rand.nextDouble()
+> 				};
 > 				//\
